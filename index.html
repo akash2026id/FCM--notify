@@ -56,7 +56,7 @@
 
         if (permission === "granted") {
           const token = await getToken(messaging, {
-            vapidKey: "👉 YOUR_VAPID_PUBLIC_KEY"
+            vapidKey: "BIzNCrJpsUisn0Jqa6ETjkMUgt5LvXUKn6BtCrTgbzGfwtEXRPS1u06T-1a4mn6djVlkZjLrio5lcsEpOfKKlIo"
           });
 
           console.log("FCM TOKEN:", token);
@@ -66,21 +66,25 @@
           alert("❌ Permission Denied");
         }
       } catch (e) {
-        console.log(e);
-        alert("Error: " + e);
+        console.error("Error:", e);
+        alert("Error: " + e.message);
       }
     };
 
     // 📩 Foreground message
     onMessage(messaging, (payload) => {
-      alert("🔔 " + payload.notification.title);
+      console.log("Message received:", payload);
+      alert("🔔 " + payload.notification.title + "\n" + payload.notification.body);
     });
 
-    // 🛠 Auto register service worker
+    // 🛠 Register service worker - Firebase needs this before getToken
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('firebase-messaging-sw.js')
+      navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((reg) => {
-          console.log("Service Worker Registered");
+          console.log("✅ Service Worker Registered:", reg.scope);
+        })
+        .catch((err) => {
+          console.error("❌ Service Worker registration failed:", err);
         });
     }
   </script>
