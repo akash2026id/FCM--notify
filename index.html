@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FCM Test - ChatCity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #0f0f0f;
+      color: #fff;
+      padding-top: 100px;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00ffcc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🔔 FCM Notification Test</h1>
+  <p>Click button to enable notification</p>
+
+  <button onclick="startFCM()">Enable Notification</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+
+    // ✅ Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAVKGyPWWQzEWfwkOwhwXabD3HbuLQz-qA",
+      authDomain: "chatcity-63c68.firebaseapp.com",
+      projectId: "chatcity-63c68",
+      storageBucket: "chatcity-63c68.firebasestorage.app",
+      messagingSenderId: "1015529457316",
+      appId: "1:1015529457316:web:638f1d8e25539177844831"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+
+    // 🔔 Start FCM
+    window.startFCM = async function () {
+      try {
+        const permission = await Notification.requestPermission();
+
+        if (permission === "granted") {
+          const token = await getToken(messaging, {
+            vapidKey: "👉 YOUR_VAPID_PUBLIC_KEY"
+          });
+
+          console.log("FCM TOKEN:", token);
+          alert("✅ Token Generated! Check Console");
+
+        } else {
+          alert("❌ Permission Denied");
+        }
+      } catch (e) {
+        console.log(e);
+        alert("Error: " + e);
+      }
+    };
+
+    // 📩 Foreground message
+    onMessage(messaging, (payload) => {
+      alert("🔔 " + payload.notification.title);
+    });
+
+    // 🛠 Auto register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('firebase-messaging-sw.js')
+        .then((reg) => {
+          console.log("Service Worker Registered");
+        });
+    }
+  </script>
+
+</body>
+</html>
